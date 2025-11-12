@@ -33,11 +33,19 @@ ativos = []
 alg = '' 
 iteracoes = 1000
 
+tempo_sobresalente = 0
+
 def algoritmo(origem, destino):
+    global tempo_sobresalente  # ✅ Declara como global para poder modificar
+    
     if alg == 'A_Estrela_Haversiano':
-        return a_estrela(graph_dist, graph_Coordenadas, origem, destino, heuristica_haversiana)
+        rota_encontrada, distancia, quantidade_nos_expandidos, fator_ramificacao, tempo_calculo_heuristica = a_estrela(graph_dist, graph_Coordenadas, origem, destino, heuristica_haversiana)
+        tempo_sobresalente += tempo_calculo_heuristica
+        return rota_encontrada, distancia, quantidade_nos_expandidos, fator_ramificacao
     elif alg == 'A_Estrela_Euclidiano':
-        return a_estrela(graph_dist, graph_Coordenadas, origem, destino, heuristica_euclidiana)
+        rota_encontrada, distancia, quantidade_nos_expandidos, fator_ramificacao, tempo_calculo_heuristica = a_estrela(graph_dist, graph_Coordenadas, origem, destino, heuristica_euclidiana)
+        tempo_sobresalente += tempo_calculo_heuristica
+        return rota_encontrada, distancia, quantidade_nos_expandidos, fator_ramificacao
     elif alg == 'BFS':
         return bfs(graph_dist, origem, destino)
     elif alg == 'DFS':
@@ -156,7 +164,7 @@ def melhorar_Rota():
     
 
 def carrega_teste():
-    global graph_dist, graph_Coordenadas, qtd_vertices, ativos, inicio, distancia_entre_ativos, melhor_rota, caminho_entre_ativos, alg, iteracoes
+    global graph_dist, graph_Coordenadas, qtd_vertices, ativos, inicio, distancia_entre_ativos, melhor_rota, caminho_entre_ativos, alg, iteracoes, tempo_sobresalente
     
     #algoritmos = ['BFS', 'DFS', 'BCU', 'A_Estrela_Euclidiano', 'A_Estrela_Haversiano']
     planilha = openpyxl.Workbook()
@@ -165,11 +173,12 @@ def carrega_teste():
 
     pagina = planilha[alg]
     pagina.sheet_format.baseColWidth = 30
-    pagina.append(['Índice', 'inicio', 'Distancia', 'ativos', 'melhor rota', 'caminho', 'Tempo'])
+    pagina.append(['Índice', 'inicio', 'Distancia', 'ativos', 'melhor rota', 'caminho', 'Tempo', 'Tempo Heuristica', 'Tempo Total'])
 
     sementes = [286208,998628,34825,342117,67982,148086,513282,306647,93844,609550,582231,725359,408128,481117,450284,102701,938521,105559]
     #print("     INICIO      ;      ATIVOS      ;      MELHOR ROTA ENTRE ATIVOS      ;      CAMINHO TOTAL     ")
     for c in range(3): # qtd de testes
+        tempo_sobresalente = 0
         random.seed(sementes[c])
         qtd_vertices = len(graph_Coordenadas)
 
@@ -201,12 +210,12 @@ def carrega_teste():
 
         print(f"{alg} ; INICIO: {inicio} ; ATIVOS: {", ".join(str(a) for a in ativos)} ; MELHOR ROTA ENTRE ATIVOS: {" -> ".join(str(a[0]) for a in melhor_rota)} ; CAMINHO TOTAL: {caminho_str}")
         # Exemplo de uso na planilha:
-        pagina.append([0, inicio, melhor_rota[-1][1], ", ".join(str(a) for a in ativos), " -> ".join(str(v[0]) for v in melhor_rota), caminho_str, tempo_Rota])
+        pagina.append([0, inicio, melhor_rota[-1][1], ", ".join(str(a) for a in ativos), " -> ".join(str(v[0]) for v in melhor_rota), caminho_str, tempo_Rota-tempo_sobresalente, tempo_sobresalente, tempo_Rota])
     # Garante que o diretório existe
     planilha.save(nome_arquivo_saida.strip())
 
 def carrega_media_testes():
-    global graph_dist, graph_Coordenadas, qtd_vertices, ativos, inicio, distancia_entre_ativos, melhor_rota, caminho_entre_ativos, alg, iteracoes
+    global graph_dist, graph_Coordenadas, qtd_vertices, ativos, inicio, distancia_entre_ativos, melhor_rota, caminho_entre_ativos, alg, iteracoes, tempo_sobresalente
     
     #algoritmos = ['BFS', 'DFS', 'BCU', 'A_Estrela_Euclidiano', 'A_Estrela_Haversiano']
     planilha = openpyxl.Workbook()
@@ -241,6 +250,7 @@ def carrega_media_testes():
             melhor_rota = []
             caminho_entre_ativos = []
             distancia_entre_ativos = {}
+            tempo_sobresalente = 0
 
             # Inicializa as distâncias entre os ativos
             distancia_entre_ativos[inicio] = {}
@@ -256,7 +266,7 @@ def carrega_media_testes():
             todas_distancias += melhor_rota[-1][1]
             lista_melores_rotas.append(melhor_rota[-1][1])
 
-            todos_tempos += tempo_Rota
+            todos_tempos += tempo_Rota-tempo_sobresalente
             #print(f"{c} ; {i} = {melhor_rota[-1][1]} ; {tempo_Rota}")
 
         pagina.append([c, todas_distancias / len(sementes), max(lista_melores_rotas), min(lista_melores_rotas), todos_tempos / len(sementes)])
@@ -269,5 +279,5 @@ if __name__ == "__main__":
     nome_arquivo_saida = sys.argv[3]
     alg = sys.argv[4].strip()
     Carrega_Dados()
-    #carrega_media_testes()
-    carrega_teste()
+    carrega_media_testes()
+    #carrega_teste()
