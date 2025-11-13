@@ -32,7 +32,6 @@ def bfs(graph_distance, origem, destino):
     # Fila: armazena (distância_acumulada, vértice_atual)
     fila_vertices = [(0, origem)]
     
-    # ✅ EXPLORA TODOS OS CAMINHOS - NÃO PARA AO ENCONTRAR O DESTINO
     while fila_vertices:
         # Remove o primeiro da fila
         distancia_atual, vertice_atual = fila_vertices.pop(0)
@@ -62,7 +61,6 @@ def bfs(graph_distance, origem, destino):
         
         quantidade_filhos_bfs += numero_filhos_do_vertice_bfs
     
-    # ✅ Após explorar TODOS os caminhos, reconstrói o melhor caminho encontrado
     rota = []
     caminho_atual = destino
     
