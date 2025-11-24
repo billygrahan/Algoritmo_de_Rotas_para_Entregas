@@ -1,0 +1,52 @@
+BFS(G, s)
+    1  for cada vértice u ∈ V[G] − {s}
+    2      u.cor = BRANCO
+    3      u.d = ∞
+    4      u.π = NIL
+    5  s.cor = CINZENTO
+    6  s.d = 0
+    7  s.π = NIL
+    8  Q = ∅
+    9  ENQUEUE(Q, s)
+    10 while Q ≠ ∅
+    11     u = DEQUEUE(Q)
+    12     for cada v ∈ Adj[u]
+    13         if v.cor == BRANCO
+    14             v.cor = CINZENTO
+    15             v.d = u.d + 1                 #(v.d = u.d + peso(u,v))
+    16             v.π = u
+    17             ENQUEUE(Q, v)
+    18     u.cor = PRETO
+
+
+
+
+
+
+
+
+
+
+
+
+
+DFS(G)
+    1  for cada vértice u ∈ V[G]
+    2      u.cor = BRANCO
+    3      u.π = NIL
+    4  tempo = 0
+    5  for cada vértice u ∈ V[G]
+    6      if u.cor == BRANCO
+    7          DFS-VISIT(G, u)
+    
+DFS-VISIT(G, u)
+    1  tempo = tempo + 1
+    2  u.d = tempo
+    3  u.cor = CINZENTO
+    4  for cada v ∈ G.Adj[u]
+    5      if v.cor == BRANCO
+    6          v.π = u
+    7          DFS-VISIT(G, v)
+    8  u.cor = PRETO
+    9  tempo = tempo + 1
+    10 u.f = tempo

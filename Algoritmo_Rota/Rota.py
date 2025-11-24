@@ -177,7 +177,7 @@ def carrega_teste():
 
     sementes = [286208,998628,34825,342117,67982,148086,513282,306647,93844,609550,582231,725359,408128,481117,450284,102701,938521,105559]
     #print("     INICIO      ;      ATIVOS      ;      MELHOR ROTA ENTRE ATIVOS      ;      CAMINHO TOTAL     ")
-    for c in range(3): # qtd de testes
+    for c in range(1): # qtd de testes
         tempo_sobresalente = 0
         random.seed(sementes[c])
         qtd_vertices = len(graph_Coordenadas)
@@ -211,6 +211,58 @@ def carrega_teste():
         print(f"{alg} ; INICIO: {inicio} ; ATIVOS: {", ".join(str(a) for a in ativos)} ; MELHOR ROTA ENTRE ATIVOS: {" -> ".join(str(a[0]) for a in melhor_rota)} ; CAMINHO TOTAL: {caminho_str}")
         # Exemplo de uso na planilha:
         pagina.append([0, inicio, melhor_rota[-1][1], ", ".join(str(a) for a in ativos), " -> ".join(str(v[0]) for v in melhor_rota), caminho_str, tempo_Rota-tempo_sobresalente, tempo_sobresalente, tempo_Rota])
+    # Garante que o diretório existe
+    planilha.save(nome_arquivo_saida.strip())
+
+def carrega_testes_unitarios():
+    global graph_dist, graph_Coordenadas, qtd_vertices, ativos, inicio, distancia_entre_ativos, melhor_rota, caminho_entre_ativos, alg, iteracoes, tempo_sobresalente, qtd_ativos
+    
+    #algoritmos = ['BFS', 'DFS', 'BCU', 'A_Estrela_Euclidiano', 'A_Estrela_Haversiano']
+    planilha = openpyxl.Workbook()
+    del planilha['Sheet']
+    planilha.create_sheet(alg)
+
+    pagina = planilha[alg]
+    pagina.sheet_format.baseColWidth = 30
+    # pagina.append(['Índice', 'inicio', 'Distancia', 'ativos', 'melhor rota', 'caminho', 'Tempo', 'Tempo Heuristica', 'Tempo Total'])
+    pagina.append(['Qtd_Nós', 'Ativos', 'Distancia', 'Tempo'])
+
+    sementes = [286208,998628,34825,342117,67982,148086,513282,306647,93844,609550,582231,725359,408128,481117,450284,102701,938521,105559]
+    #print("     INICIO      ;      ATIVOS      ;      MELHOR ROTA ENTRE ATIVOS      ;      CAMINHO TOTAL     ")
+    for c in range(1): # qtd de testes
+        tempo_sobresalente = 0
+        random.seed(sementes[c])
+        qtd_vertices = len(graph_Coordenadas)
+
+        inicio = random.randint(1, qtd_vertices)
+        ativos = random.sample(range(1, qtd_vertices + 1), qtd_ativos)
+
+        melhor_rota = []
+        caminho_entre_ativos = []
+        distancia_entre_ativos = {}
+
+        distancia_entre_ativos[inicio] = {}
+        for ativo in ativos:
+            distancia_entre_ativos[ativo] = {}
+
+        inicio_tempo = time.time()
+        melhorar_Rota()
+        tempo_Rota = time.time() - inicio_tempo
+
+        caminho_completo = [str(melhor_rota[0][0])]
+        for i in range(len(melhor_rota)-1):
+            # Procura o caminho entre melhor_rota[i][0] e melhor_rota[i+1][0]
+            for caminho in caminho_entre_ativos:
+                if melhor_rota[i][0] == caminho[0] and melhor_rota[i+1][0] == caminho[-1]:
+                    # Adiciona todos os vértices intermediários (exceto o primeiro, já está na lista)
+                    caminho_completo.extend(str(v) for v in caminho[1:])
+                    break  # achou o caminho, não precisa procurar mais
+
+        caminho_str = " -> ".join(caminho_completo)
+
+        print(f"{alg} ; INICIO: {inicio} ; ATIVOS: {", ".join(str(a) for a in ativos)} ; MELHOR ROTA ENTRE ATIVOS: {" -> ".join(str(a[0]) for a in melhor_rota)} ; CAMINHO TOTAL: {caminho_str}")
+        # Exemplo de uso na planilha:
+        pagina.append([qtd_vertices, qtd_ativos,melhor_rota[-1][1], tempo_Rota-tempo_sobresalente])
     # Garante que o diretório existe
     planilha.save(nome_arquivo_saida.strip())
 
@@ -274,10 +326,12 @@ def carrega_media_testes():
     planilha.save(f"{texto[0]}")
 
 if __name__ == "__main__":
+    sys.setrecursionlimit(1000000)
     qtd_ativos = int(sys.argv[1])
     nome_arquivo_entrada = sys.argv[2]
     nome_arquivo_saida = sys.argv[3]
     alg = sys.argv[4].strip()
     Carrega_Dados()
     #carrega_media_testes()
-    carrega_teste()
+    # carrega_teste()
+    carrega_testes_unitarios()
