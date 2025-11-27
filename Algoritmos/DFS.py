@@ -7,6 +7,7 @@ import sys
 
 
 def dfs(graph_distance, origem, destino):
+    sys.setrecursionlimit(1000000000)
     
     # Variáveis para rastrear o melhor caminho encontrado
     melhor_distancia = float('inf')

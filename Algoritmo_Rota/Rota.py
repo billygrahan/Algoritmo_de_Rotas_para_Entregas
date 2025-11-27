@@ -326,7 +326,7 @@ def carrega_media_testes():
     planilha.save(f"{texto[0]}")
 
 if __name__ == "__main__":
-    sys.setrecursionlimit(1000000)
+    sys.setrecursionlimit(1000000000)
     qtd_ativos = int(sys.argv[1])
     nome_arquivo_entrada = sys.argv[2]
     nome_arquivo_saida = sys.argv[3]

@@ -8,6 +8,7 @@ from collections import deque
 
 
 def bfs(graph_distance, origem, destino):
+    sys.setrecursionlimit(1000000000)
     
     melhor_distancia = float('inf')
     melhor_caminho = []
@@ -38,7 +39,8 @@ def bfs(graph_distance, origem, destino):
             if vizinho not in visitados_caminho:
                 
                 nova_distancia = distancia_atual + peso_aresta
-                
+
+                # if nova_distancia < melhor_distancia:
                 novo_caminho = caminho_atual + [vizinho]
                 novos_visitados = visitados_caminho | {vizinho}
                 
