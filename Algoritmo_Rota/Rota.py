@@ -332,6 +332,6 @@ if __name__ == "__main__":
     nome_arquivo_saida = sys.argv[3]
     alg = sys.argv[4].strip()
     Carrega_Dados()
-    #carrega_media_testes()
+    carrega_media_testes()
     # carrega_teste()
-    carrega_testes_unitarios()
+    # carrega_testes_unitarios()
