@@ -11,18 +11,18 @@ def converter_para_radianos(valor):
 
 # Calcula a heuristica haversiana
 def heuristica_haversiana(grafo, vertice, destino):
-    x1, y1 = grafo[vertice]
-    x2, y2 = grafo[destino]
+    x1, y1 = grafo[vertice]  # lat1, lon1
+    x2, y2 = grafo[destino]  # lat2, lon2
     
-    x1 = converter_para_radianos(x1)
-    x2 = converter_para_radianos(x2)
-    y1 = converter_para_radianos(y1)
-    y2 = converter_para_radianos(y2)
+    lat1 = converter_para_radianos(x1)
+    lat2 = converter_para_radianos(x2)
+    lon1 = converter_para_radianos(y1)
+    lon2 = converter_para_radianos(y2)
     
-    diferenca_longitudes = y1 - x1
-    diferenca_latitudes = y2 - x2
+    diferenca_latitudes = lat2 - lat1
+    diferenca_longitudes = lon2 - lon1
     
-    formula1 = math.sin(diferenca_latitudes / 2)**2 + math.cos(x2) * math.cos(y2) * math.sin(diferenca_longitudes / 2)**2
+    formula1 = math.sin(diferenca_latitudes / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(diferenca_longitudes / 2)**2
     formula2 = 2 * math.asin(math.sqrt(formula1))
     
     raio_terra = 6371
